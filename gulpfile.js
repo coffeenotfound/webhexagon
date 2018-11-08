@@ -14,7 +14,7 @@ gulp.task("generate-website", function() {
 	.pipe(gulp.dest("./build/"));
 });
 
-gulp.task("compile", function() {
+gulp.task("compile-ts", function() {
 	return browserify({
 		basedir: "./",
 		paths: ["./src/"],
@@ -26,4 +26,4 @@ gulp.task("compile", function() {
 	.pipe(gulp.dest("./build/"));
 });
 
-gulp.task("build", ["generate-website", "compile"], function() {});
+gulp.task("build", ["generate-website", "compile-ts"], function() {});
