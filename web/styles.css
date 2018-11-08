@@ -20,3 +20,7 @@ body {
 	height: auto;
 	*/
 }
+.game-canvas:focus {
+	border: inherit;
+	outline: inherit;
+}
