@@ -29,7 +29,7 @@ export class Display {
 		
 		// Register focus event handler
 		this.canvas.addEventListener("focus", (e: FocusEvent) => {
-			this.canvas["requestPointerLock"]();
+			
 		});
 		this.canvas.addEventListener("blur", (e: FocusEvent) => {
 			
