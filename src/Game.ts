@@ -1,4 +1,8 @@
-import {GameRenderer} from "render/GameRenderer";
+import { GameRenderer } from "render/GameRenderer";
+import { MenuManager } from "menu/MenuManager";
+import { MainMenu } from "menu/MainMenu";
+import { Display } from "Display";
+import { Input } from "Input";
 
 export class Game {
 	public static GAME_RES_X = 640;
@@ -6,10 +10,11 @@ export class Game {
 	
 	private static gameInstance: Game;
 	
+	public inputSystem: Input;
 	public gameRenderer: GameRenderer;
+	public menuManager: MenuManager;
 	
-	public canvasElement: HTMLCanvasElement;
-	public webglContext: WebGLRenderingContext;
+	public display: Display;
 	
 	public init(): void {
 		// Resolve canvas element
@@ -17,28 +22,31 @@ export class Game {
 		if(!(element instanceof HTMLCanvasElement)) {
 			throw new Error("Could not resolve game canvas element: #webhexagon-canvas");
 		}
-		this.canvasElement = element as HTMLCanvasElement;
 		
-		// Create webgl context
-		let contextAttributes = {
-			alpha: false,
-			depth: true,
-			stencil: true,
-			antialias: true,
-			failIfMajorPerformanceCaveat: true,
-		};
-		this.webglContext = this.canvasElement.getContext("webgl", contextAttributes) as WebGLRenderingContext;
+		// Create display
+		this.display = new Display(element as HTMLCanvasElement);
+		this.display.resize(Game.GAME_RES_X, Game.GAME_RES_Y);
 		
-		if(!this.webglContext) {
-			throw new Error("Failed to create webgl context");
-		}
-		
-		// Set canvas size
-		this.canvasElement.width = Game.GAME_RES_X;
-		this.canvasElement.height = Game.GAME_RES_Y;
+		// Open display (init stuff)
+		this.display.open();
 		
 		// Create game renderer
-		this.gameRenderer = new GameRenderer(this.webglContext);
+		this.gameRenderer = new GameRenderer(this.display.getGLContext());
+		
+		// Create menu manager
+		this.menuManager = new MenuManager();
+		
+		// Create input
+		this.inputSystem = new Input();
+		this.inputSystem.bindKeyInputChannel(this.display.getKeyInputChannel());
+	}
+	
+	public start(): void {
+		// Focus game canvas
+		this.display.focus();
+		
+		// Open main menu
+		this.menuManager.openMenu(new MainMenu());
 	}
 	
 	public frame(): void {
@@ -59,10 +67,6 @@ export class Game {
 			window.requestAnimationFrame(mainloop);
 		};
 		window.requestAnimationFrame(mainloop);
-	}
-	
-	public start(): void {
-		
 	}
 	
 	public static main(): void {
